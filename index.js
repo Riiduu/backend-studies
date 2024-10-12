@@ -1,11 +1,36 @@
 const fs = require('fs')
 const http = require('http')
+const url = require('url')
 
 /////////////////////////////
 // SERVER
 
-const server = http.createServer((req, res) => {
-    res.end('Hello from the server')
+// __dirname - current location of the server files
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
+const dataObj = JSON.parse(data)
+
+const server = http.createServer((req, res) => {    
+    const pathName = req.url;
+
+    
+
+    // checks the current url and returns data accordingly
+    if (pathName === '/overview' || pathName === '/') {
+        res.end('This is the overview')
+    } else if (pathName === '/api') {
+        res.writeHead(200, {'Content-type': 'application/json'})
+        res.end(data)
+    } else if (pathName === '/product') {
+        res.end('This is the product')
+    } else {
+        res.writeHead(404, {
+            // a standard header informing the browser of the website content type
+            'Content-type': 'text/html',
+            // a custom header
+            'my-own-header': 'Hello world!'
+        });
+        res.end('<h1>Page not found!</h1>')
+    }
 });
 
 // uses 2 parameters. 1 - port, 2 - ip
